@@ -1,17 +1,834 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <title>Nakibinge Steven Test Page</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NeoXLang — A Sanlabs Product</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --ink:#0D1B2A; --paper:#F5F0E8; --gold:#C8973A; --rust:#B5431A;
+  --teal:#1A6B5C; --muted:#6B6252; --line:rgba(13,27,42,0.12); --warn:#7A1A1A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:'Instrument Serif',Georgia,serif;font-size:18px;line-height:1.7;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+h1,h2,h3{font-family:'Syne',sans-serif;}
+
+/* WIP BANNER */
+#wip-banner{position:fixed;top:0;left:0;right:0;z-index:300;background:var(--warn);color:rgba(255,255,255,.95);padding:0 48px;height:36px;display:flex;align-items:center;gap:12px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.05em;overflow:hidden;}
+.wip-pill{background:rgba(255,255,255,.18);padding:2px 10px;border-radius:2px;text-transform:uppercase;letter-spacing:.15em;white-space:nowrap;flex-shrink:0;font-size:10px;}
+.wip-scroll{display:flex;gap:40px;align-items:center;animation:wscroll 30s linear infinite;white-space:nowrap;}
+.wip-scroll span{opacity:.85;font-weight:400;}
+.wip-scroll span::before{content:'⚠ ';opacity:.5;}
+@keyframes wscroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.wip-close{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;font-size:15px;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:800;transition:color .2s;}
+.wip-close:hover{color:white;}
+
+/* NAV */
+nav{position:fixed;top:36px;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:12px 48px;background:rgba(245,240,232,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);transition:top .35s;}
+nav.no-banner{top:0;}
+.nav-brand{display:flex;flex-direction:column;gap:0;text-decoration:none;cursor:pointer;}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;color:var(--ink);line-height:1.1;}
+.nav-by{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+.nav-links{display:flex;gap:2px;list-style:none;align-items:center;}
+.nav-links a{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.04em;text-decoration:none;color:var(--ink);opacity:.48;transition:opacity .2s;padding:6px 11px;}
+.nav-links a:hover{opacity:1;}
+.nav-links a.active{opacity:1;background:var(--ink);color:var(--paper);}
+.nav-dl{display:flex;gap:5px;}
+.btn-nd{display:inline-block;padding:6px 13px;border-radius:2px;color:white;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;transition:opacity .2s,transform .15s;white-space:nowrap;}
+.btn-nd:hover{opacity:.82;transform:translateY(-1px);}
+.nd-interp{background:var(--ink);}
+.nd-desk{background:var(--teal);}
+.nd-apk{background:var(--rust);}
+
+/* PAGES */
+.page{display:none;padding-top:106px;min-height:100vh;}
+.page.active{display:block;}
+
+/* SHARED */
+.section-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.section-title{font-size:clamp(26px,3.5vw,46px);font-weight:800;line-height:1.08;letter-spacing:-.025em;margin-bottom:20px;}
+.section-body{color:var(--muted);font-size:16px;max-width:600px;line-height:1.72;}
+.section-inner{max-width:1200px;margin:0 auto;padding:80px 48px;}
+section{border-bottom:1px solid var(--line);}
+
+/* HOME HERO */
+.hero{min-height:calc(100vh - 106px);display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line);}
+.hero-text{padding:72px 48px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--line);}
+.hero-kicker{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--rust);margin-bottom:24px;}
+.hero-title{font-size:clamp(42px,5.5vw,80px);font-weight:800;line-height:.96;letter-spacing:-.03em;margin-bottom:28px;}
+.hero-title em{font-family:'Instrument Serif',serif;font-style:italic;color:var(--teal);}
+.hero-sub{font-size:18px;line-height:1.65;color:var(--muted);max-width:460px;margin-bottom:44px;}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-primary{display:inline-block;padding:13px 28px;background:var(--ink);color:var(--paper);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:background .2s,transform .15s;}
+.btn-primary:hover{background:var(--rust);transform:translateY(-2px);}
+.btn-ghost{display:inline-block;padding:13px 28px;border:1.5px solid var(--ink);color:var(--ink);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:background .2s,color .2s,transform .15s;}
+.btn-ghost:hover{background:var(--ink);color:var(--paper);transform:translateY(-2px);}
+.hero-visual{padding:72px 48px;display:flex;flex-direction:column;justify-content:center;background:var(--ink);position:relative;overflow:hidden;}
+.hero-visual::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(200,151,58,.15) 0%,transparent 70%);}
+.code-window{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:4px;overflow:hidden;position:relative;z-index:1;}
+.code-bar{display:flex;align-items:center;gap:7px;padding:11px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);}
+.code-dot{width:9px;height:9px;border-radius:50%;}
+.code-fn{color:rgba(255,255,255,.22);font-family:'DM Mono',monospace;font-size:11px;margin-left:8px;}
+.code-body{padding:24px 26px;font-family:'DM Mono',monospace;font-size:13px;line-height:2;}
+.cc{color:#6B7A8D;} .ck{color:#C8973A;} .cf{color:#5DB8A0;} .cs{color:#E07B6A;} .cd{color:rgba(255,255,255,.3);} .cw{color:rgba(255,255,255,.82);}
+.lang-tag{display:inline-block;margin-top:20px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);opacity:.65;}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);}
+.stat{padding:44px 36px;border-right:1px solid var(--line);}
+.stat:last-child{border-right:none;}
+.stat-num{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;line-height:1;letter-spacing:-.04em;margin-bottom:6px;}
+.stat-num span{color:var(--gold);}
+.stat-label{font-size:13px;color:var(--muted);}
+
+/* BARRIERS */
+.barrier-table{width:100%;border-collapse:collapse;margin-top:44px;font-size:15px;}
+.barrier-table th{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-align:left;padding:11px 18px;border-bottom:2px solid var(--ink);color:var(--muted);}
+.barrier-table td{padding:18px;border-bottom:1px solid var(--line);vertical-align:top;}
+.barrier-table tr:last-child td{border-bottom:none;}
+.barrier-table td:first-child{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;}
+.badge{display:inline-block;padding:2px 9px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--rust);color:white;border-radius:2px;}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin-top:48px;}
+.feature-card{padding:36px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .2s;}
+.feature-card:nth-child(3n){border-right:none;}
+.feature-card:hover{background:rgba(13,27,42,.03);}
+.fi{font-size:28px;margin-bottom:16px;}
+.ft{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:10px;}
+.fb{font-size:14px;color:var(--muted);line-height:1.62;}
+
+/* ROADMAP */
+.roadmap{display:grid;grid-template-columns:repeat(4,1fr);margin-top:52px;position:relative;}
+.roadmap::before{content:'';position:absolute;top:28px;left:12.5%;right:12.5%;height:2px;background:var(--line);}
+.phase{padding:0 20px;text-align:center;}
+.phase-num{width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:'Syne',sans-serif;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;position:relative;z-index:1;}
+.phase-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:8px;}
+.phase-body{font-size:13px;color:var(--muted);line-height:1.55;}
+
+/* GALLERY */
+.gallery-header{padding:56px 48px 0;max-width:1200px;margin:0 auto;}
+.gallery-tabs{display:flex;border-bottom:1px solid var(--line);margin:0 48px;}
+.gtab{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:14px 24px;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px;transition:color .2s;}
+.gtab:hover{color:var(--ink);}
+.gtab.active{color:var(--ink);border-bottom-color:var(--gold);}
+.gallery-panel{display:none;padding:44px 48px;max-width:1200px;margin:0 auto;}
+.gallery-panel.active{display:block;}
+.gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;}
+.gallery-grid.three{grid-template-columns:repeat(3,1fr);}
+.gi{position:relative;overflow:hidden;background:var(--ink);cursor:zoom-in;}
+.gi.wide{grid-column:span 2;}
+.gi img{width:100%;display:block;transition:transform .4s,opacity .3s;opacity:.87;}
+.gi:hover img{transform:scale(1.02);opacity:1;}
+.gcap{position:absolute;bottom:0;left:0;right:0;padding:14px 18px;background:linear-gradient(transparent,rgba(13,27,42,.88));color:white;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.04em;opacity:0;transition:opacity .3s;}
+.gi:hover .gcap{opacity:1;}
+.mobile-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
+.mframe{background:#101820;border-radius:28px;padding:10px;box-shadow:0 20px 48px rgba(13,27,42,.28);position:relative;}
+.mframe::before{content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);width:52px;height:5px;background:rgba(255,255,255,.1);border-radius:3px;z-index:1;}
+.mframe img{width:100%;display:block;border-radius:20px;cursor:zoom-in;}
+.mlabel{text-align:center;margin-top:12px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+
+/* CASE */
+.case-layout{display:grid;grid-template-columns:264px 1fr;min-height:calc(100vh - 106px);}
+.case-sidebar{border-right:1px solid var(--line);position:sticky;top:106px;height:calc(100vh - 106px);overflow-y:auto;padding:36px 0;background:rgba(13,27,42,.018);}
+.cs-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);padding:0 28px;margin-bottom:14px;}
+.cs-link{display:block;padding:7px 28px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-decoration:none;transition:color .2s,background .2s;border-left:3px solid transparent;}
+.cs-link:hover{color:var(--ink);background:rgba(13,27,42,.04);}
+.cs-link.active{color:var(--ink);border-left-color:var(--gold);background:rgba(200,151,58,.05);}
+.case-content{padding:60px 68px;max-width:860px;}
+.case-content h2{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin:52px 0 18px;letter-spacing:-.02em;}
+.case-content h2:first-of-type{margin-top:0;}
+.case-content p{color:var(--muted);margin-bottom:18px;line-height:1.76;font-size:17px;}
+.case-content p strong{color:var(--ink);}
+.case-content em{color:var(--teal);font-style:italic;}
+.case-content ul,.case-content ol{color:var(--muted);padding-left:22px;margin-bottom:18px;}
+.case-content li{margin-bottom:7px;line-height:1.65;font-size:16px;}
+.quote-block{border-left:3px solid var(--gold);padding:18px 24px;background:rgba(200,151,58,.06);margin:28px 0;font-style:italic;color:var(--ink);font-size:17px;}
+.rm-table{width:100%;border-collapse:collapse;margin:22px 0;font-size:14px;}
+.rm-table th{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:left;padding:11px 14px;border-bottom:2px solid var(--ink);}
+.rm-table td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--muted);}
+.rm-table td:first-child{font-family:'Syne',sans-serif;font-weight:700;color:var(--ink);font-size:13px;}
+.rm-table tr:last-child td{border-bottom:none;}
+code{font-family:'DM Mono',monospace;font-size:13px;background:rgba(13,27,42,.08);padding:2px 6px;border-radius:3px;color:var(--teal);}
+.code-block{background:var(--ink);color:var(--paper);padding:22px 26px;border-radius:4px;margin:22px 0;font-family:'DM Mono',monospace;font-size:12px;line-height:1.9;overflow-x:auto;}
+.code-block .cc{color:#6B7A8D;} .code-block .ck{color:#C8973A;} .code-block .cf{color:#5DB8A0;}
+
+/* HOW IT WORKS */
+.hw-hero{background:var(--ink);color:var(--paper);padding:80px 48px;border-bottom:1px solid rgba(255,255,255,.08);}
+.hw-hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.hw-hero h1{font-size:clamp(32px,4vw,56px);font-weight:800;letter-spacing:-.03em;margin-bottom:20px;line-height:1.0;color:var(--paper);}
+.hw-hero p{color:rgba(245,240,232,.62);font-size:16px;line-height:1.68;}
+.arch-diagram{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:28px;font-family:'DM Mono',monospace;font-size:12px;}
+.arch-layer{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:3px;margin-bottom:5px;font-size:12px;}
+.arch-layer.l1{background:rgba(200,151,58,.18);color:#C8973A;}
+.arch-layer.l2{background:rgba(26,107,92,.2);color:#5DB8A0;}
+.arch-layer.l3{background:rgba(181,67,26,.18);color:#E07B6A;}
+.arch-layer.l4{background:rgba(255,255,255,.06);color:rgba(245,240,232,.55);}
+.arch-arrow{text-align:center;color:rgba(255,255,255,.2);font-size:14px;margin:2px 0;font-family:'DM Mono',monospace;font-size:11px;}
+.hw-section{border-bottom:1px solid var(--line);}
+.hw-inner{max-width:1200px;margin:0 auto;padding:72px 48px;}
+.hw-step{display:grid;grid-template-columns:56px 1fr;gap:28px;margin-bottom:52px;}
+.hw-step:last-child{margin-bottom:0;}
+.hw-num{width:56px;height:56px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:'Syne',sans-serif;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px;}
+.hw-title{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;margin-bottom:10px;letter-spacing:-.01em;}
+.hw-body{color:var(--muted);font-size:16px;line-height:1.7;}
+.hw-body p{margin-bottom:14px;}
+.opcode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:20px 0;background:var(--line);}
+.opcode-item{background:var(--paper);padding:14px 16px;}
+.opcode-cat{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.opcode-list{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9;}
+.proto-row{display:grid;grid-template-columns:130px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);align-items:start;}
+.proto-row:last-child{border-bottom:none;}
+.proto-key{font-family:'DM Mono',monospace;font-size:12px;color:var(--teal);}
+.proto-val{color:var(--muted);font-size:14px;line-height:1.6;}
+
+/* DOWNLOAD */
+.dl-hero{background:var(--ink);color:var(--paper);padding:72px 48px;text-align:center;}
+.dl-hero h1{font-size:clamp(34px,5vw,60px);font-weight:800;letter-spacing:-.03em;margin-bottom:14px;}
+.dl-hero p{color:rgba(245,240,232,.55);font-size:16px;max-width:480px;margin:0 auto;}
+.dl-cards{max-width:1100px;margin:0 auto;padding:52px 48px;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);}
+.dl-card{background:var(--paper);padding:40px 32px;display:flex;flex-direction:column;}
+.dl-icon{font-size:38px;margin-bottom:18px;}
+.dl-tag{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.dl-title{font-family:'Syne',sans-serif;font-weight:800;font-size:21px;margin-bottom:10px;letter-spacing:-.02em;}
+.dl-body{font-size:14px;color:var(--muted);line-height:1.65;flex-grow:1;margin-bottom:24px;}
+.btn-dl{display:inline-flex;align-items:center;gap:7px;padding:13px 22px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:white;transition:transform .15s,opacity .2s;margin-bottom:7px;}
+.btn-dl:hover{transform:translateY(-2px);opacity:.88;}
+.btn-dl.green{background:var(--teal);}
+.btn-dl.orange{background:var(--rust);}
+.btn-dl.dark{background:var(--ink);}
+.btn-dl.outline{background:transparent;border:1.5px solid var(--line);color:var(--muted);font-size:11px;padding:9px 18px;}
+.btn-dl.outline:hover{border-color:var(--ink);color:var(--ink);}
+.install-section{max-width:1100px;margin:0 auto;padding:60px 48px;}
+.install-tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:40px;}
+.itab{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:13px 20px;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px;transition:color .2s;}
+.itab:hover{color:var(--ink);}
+.itab.active{color:var(--ink);border-bottom-color:var(--gold);}
+.ipanel{display:none;}
+.ipanel.active{display:block;}
+.install-step{display:flex;gap:18px;margin-bottom:28px;align-items:flex-start;}
+.is-num{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;}
+.is-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:6px;}
+.is-body{font-size:14px;color:var(--muted);line-height:1.65;}
+.cmd{background:var(--ink);color:#5DB8A0;padding:13px 18px;font-family:'DM Mono',monospace;font-size:13px;margin:10px 0;border-radius:3px;display:block;overflow-x:auto;line-height:1.7;}
+.warn-box{background:rgba(122,26,26,.07);border-left:3px solid var(--warn);padding:14px 18px;margin:14px 0;font-size:14px;color:var(--muted);}
+.warn-box strong{color:var(--warn);}
+.info-box{background:rgba(26,107,92,.07);border-left:3px solid var(--teal);padding:14px 18px;margin:14px 0;font-size:14px;color:var(--muted);}
+.info-box strong{color:var(--teal);}
+.docs-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px;}
+.doc-card{border:1px solid var(--line);padding:26px;display:flex;align-items:flex-start;gap:16px;transition:background .2s,border-color .2s;text-decoration:none;color:var(--ink);}
+.doc-card:hover{background:rgba(13,27,42,.03);border-color:var(--gold);}
+.doc-icon{font-size:30px;flex-shrink:0;}
+.doc-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;}
+.doc-desc{font-size:13px;color:var(--muted);line-height:1.5;}
+
+/* TEAM */
+.team-wrap{border-bottom:1px solid var(--line);}
+.team-top{max-width:1200px;margin:0 auto;padding:80px 48px;display:grid;grid-template-columns:1fr 1fr;gap:72px;}
+.team-lead h1{font-size:clamp(30px,4vw,52px);font-weight:800;letter-spacing:-.03em;margin-bottom:18px;}
+.team-lead p{color:var(--muted);font-size:16px;line-height:1.68;}
+.team-card{border:1px solid var(--line);padding:36px;display:flex;flex-direction:column;gap:14px;justify-content:center;}
+.team-avatar{width:60px;height:60px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:'Syne',sans-serif;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;}
+.team-name{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;}
+.team-role{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);}
+.team-desc{font-size:15px;color:var(--muted);line-height:1.65;}
+.repo-wrap{max-width:1200px;margin:0 auto;padding:60px 48px;}
+.repo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px;}
+.repo-card{border:1px solid var(--line);padding:26px;transition:background .2s,border-color .2s;}
+.repo-card:hover{background:rgba(13,27,42,.03);border-color:var(--gold);}
+.repo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;margin-bottom:6px;}
+.repo-desc{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:12px;}
+.repo-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.repo-tag{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--line);color:var(--muted);border-radius:2px;}
+.tag-wip{background:rgba(122,26,26,.08);border-color:rgba(122,26,26,.2);color:var(--warn);}
+.status-wrap{max-width:1200px;margin:0 auto;padding:0 48px 60px;}
+.status-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--line);}
+.si{background:var(--paper);padding:22px 26px;display:flex;gap:14px;align-items:flex-start;}
+.sdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+.dot-r{background:#c0392b;} .dot-y{background:#e67e22;} .dot-g{background:#27ae60;}
+.si-t{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:3px;}
+.si-b{font-size:13px;color:var(--muted);line-height:1.5;}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;z-index:1000;background:rgba(13,27,42,.96);align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:90vw;max-height:88vh;border-radius:2px;box-shadow:0 32px 80px rgba(0,0,0,.5);}
+.lb-close{position:fixed;top:22px;right:28px;font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:rgba(255,255,255,.55);cursor:pointer;background:none;border:none;transition:color .2s;}
+.lb-close:hover{color:white;}
+
+@media(max-width:960px){
+  #wip-banner{padding:0 16px;} nav{padding:12px 20px;} .nav-links{display:none;} .page{padding-top:96px;}
+  .hero{grid-template-columns:1fr;} .hero-visual{display:none;}
+  .stats{grid-template-columns:repeat(2,1fr);} .stat{border-right:none;border-bottom:1px solid var(--line);}
+  .features-grid{grid-template-columns:1fr;} .feature-card{border-right:none!important;}
+  .roadmap{grid-template-columns:repeat(2,1fr);} .roadmap::before{display:none;}
+  .case-layout{grid-template-columns:1fr;} .case-sidebar{display:none;} .case-content{padding:40px 24px;}
+  .gallery-grid,.gallery-grid.three{grid-template-columns:1fr;} .gi.wide{grid-column:span 1;}
+  .mobile-grid{grid-template-columns:repeat(2,1fr);}
+  .gallery-tabs,.gallery-panel{margin:0 24px;padding:28px 0;}
+  .dl-cards{grid-template-columns:1fr;padding:28px 24px;}
+  .install-section,.repo-wrap,.status-wrap,.section-inner,.hw-inner{padding-left:24px;padding-right:24px;}
+  .hw-hero-inner{grid-template-columns:1fr;} .opcode-grid{grid-template-columns:1fr 1fr;}
+  .team-top{grid-template-columns:1fr;gap:32px;padding:48px 24px;}
+  .repo-grid{grid-template-columns:1fr;} .status-grid{grid-template-columns:1fr;}
+  .docs-grid{grid-template-columns:1fr;} .hw-hero{padding:56px 24px;}
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Welcome to My Simple Web Page</h1>
-  </header>
-  <main>
-    <p>This is a test webpage hosted on GitHub Pages.</p>
-  </main>
+
+<!-- WIP BANNER -->
+<div id="wip-banner">
+  <span class="wip-pill">Work In Progress</span>
+  <div class="wip-scroll">
+    <span>Compiler bugs still being fixed</span>
+    <span>Communication protocols still being hardened</span>
+    <span>Language translation layer still in early development</span>
+    <span>Hardware handshaking needs more work</span>
+    <span>Still designing &amp; building hardware — currently sampling compiler</span>
+    <span>A long way from complete language coverage</span>
+    <span>Compiler bugs still being fixed</span>
+    <span>Communication protocols still being hardened</span>
+    <span>Language translation layer still in early development</span>
+    <span>Hardware handshaking needs more work</span>
+    <span>Still designing &amp; building hardware — currently sampling compiler</span>
+    <span>A long way from complete language coverage</span>
+  </div>
+  <button class="wip-close" onclick="dismissBanner()">✕</button>
+</div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <div class="nav-brand" onclick="showPage('home')">
+    <span class="nav-logo">NeoXLang</span>
+    <span class="nav-by">A Sanlabs Product</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('home');return false;" id="nav-home" class="active">Home</a></li>
+    <li><a href="#" onclick="showPage('gallery');return false;" id="nav-gallery">Gallery</a></li>
+    <li><a href="#" onclick="showPage('howitworks');return false;" id="nav-howitworks">How It Works</a></li>
+    <li><a href="#" onclick="showPage('case');return false;" id="nav-case">The Case</a></li>
+    <li><a href="#" onclick="showPage('team');return false;" id="nav-team">Team</a></li>
+    <li><a href="#" onclick="showPage('download');return false;" id="nav-download">Download</a></li>
+  </ul>
+  <div class="nav-dl">
+    <a href="NeoXLang_Interpreter.zip" download class="btn-nd nd-interp">⬇ Interpreter</a>
+    <a href="NeoXLang_Desktop.zip" download class="btn-nd nd-desk">⬇ Desktop</a>
+    <a href="NeoXLang.apk" download class="btn-nd nd-apk">⬇ APK</a>
+  </div>
+</nav>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-text">
+      <div class="hero-kicker">Eigen Prize Submission · 2025 · A Sanlabs Product</div>
+      <h1 class="hero-title">Code in Your <em>Mother Tongue</em></h1>
+      <p class="hero-sub">NeoXLang is a mobile-first embedded systems IDE that turns any smartphone into a full Arduino programming device — with keywords in Swahili, Yoruba, Hausa, and more. No laptop required.</p>
+      <div class="hero-cta">
+        <a href="#" onclick="showPage('download');return false;" class="btn-primary">Download</a>
+        <a href="#" onclick="showPage('howitworks');return false;" class="btn-ghost">How It Works</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="code-window">
+        <div class="code-bar">
+          <div class="code-dot" style="background:#E07B6A"></div>
+          <div class="code-dot" style="background:#C8973A"></div>
+          <div class="code-dot" style="background:#5DB8A0"></div>
+          <span class="code-fn">neoxlang_swahili.ino</span>
+        </div>
+        <div class="code-body">
+          <div><span class="cc">// Kiswahili — compiles to standard C++</span></div>
+          <div><span class="ck">#include</span> <span class="cs">"swahili_arduino.h"</span></div>
+          <div>&nbsp;</div>
+          <div><span class="cf">anza</span><span class="cd">() {</span> <span class="cc">// setup()</span></div>
+          <div>&nbsp;&nbsp;<span class="cf">weka_hali</span><span class="cd">(LED,</span> <span class="ck">TOKA</span><span class="cd">);</span> <span class="cc">// OUTPUT</span></div>
+          <div><span class="cd">}</span></div>
+          <div>&nbsp;</div>
+          <div><span class="cf">rudia</span><span class="cd">() {</span> <span class="cc">// loop()</span></div>
+          <div>&nbsp;&nbsp;<span class="cf">andika_nambari</span><span class="cd">(LED,</span> <span class="ck">WASHA</span><span class="cd">);</span></div>
+          <div>&nbsp;&nbsp;<span class="cf">subiri</span><span class="cd">(1000);</span></div>
+          <div>&nbsp;&nbsp;<span class="cf">andika_nambari</span><span class="cd">(LED,</span> <span class="ck">ZIMA</span><span class="cd">);</span></div>
+          <div><span class="cd">}</span></div>
+        </div>
+      </div>
+      <span class="lang-tag">↑ Swahili · identical bytecode output to standard C++</span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num">650<span>M+</span></div><div class="stat-label">Africans blocked by English-only programming tools</div></div>
+    <div class="stat"><div class="stat-num">750<span>M+</span></div><div class="stat-label">Active mobile users in Sub-Saharan Africa</div></div>
+    <div class="stat"><div class="stat-num">1.2<span>B</span></div><div class="stat-label">Africans under 25 by 2050</div></div>
+    <div class="stat"><div class="stat-num">70<span>+</span></div><div class="stat-label">Languages Scratch supports — proof local-language IDEs work</div></div>
+  </div>
+
+  <section>
+    <div class="section-inner">
+      <div class="section-label">The Problem</div>
+      <h2 class="section-title">Four Barriers. One Continent.</h2>
+      <p class="section-body">Africa has the talent, the tinkerers, and the problems that technology could solve. What's missing is access — blocked by four compounding barriers.</p>
+      <table class="barrier-table">
+        <thead><tr><th>Barrier</th><th>Who it shuts out</th><th>Scale</th></tr></thead>
+        <tbody>
+          <tr><td>English-only programming interfaces</td><td>Africans whose first language is not English</td><td><span class="badge">Biggest single barrier</span></td></tr>
+          <tr><td>Desktop/laptop scarcity</td><td>Students and makers without computer infrastructure</td><td>750M+ active mobile users</td></tr>
+          <tr><td>Unreliable power</td><td>Rural and peri-urban communities</td><td>Most of Africa outside major capitals</td></tr>
+          <tr><td>English error messages &amp; docs</td><td>Technicians who understand hardware but not English code</td><td>Millions of skilled repair workers</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-inner">
+      <div class="section-label">The Solution</div>
+      <h2 class="section-title">One Platform. Two Breakthroughs.</h2>
+      <div class="features-grid">
+        <div class="feature-card"><div class="fi">📱</div><div class="ft">Mobile-First IDE</div><div class="fb">Full CodeMirror editor on Android, iOS, Linux, macOS. A $50 second-hand phone is all you need — no laptop, no computer lab.</div></div>
+        <div class="feature-card"><div class="fi">🗣️</div><div class="ft">Local-Language Wrappers</div><div class="fb">Arduino keywords in Swahili, Yoruba, Hausa via thin <code>#define</code> macros. The microcontroller sees C++. The student sees their language.</div></div>
+        <div class="feature-card"><div class="fi">🤖</div><div class="ft">AI in Your Mother Tongue</div><div class="fb">Describe what you want to build in Swahili or Yoruba. AI generates working firmware — a zero-knowledge on-ramp to hardware programming.</div></div>
+        <div class="feature-card"><div class="fi">🔌</div><div class="ft">Multi-Protocol Connectivity</div><div class="fb">USB, BLE, Classic Bluetooth (HC-05/HC-06 — under $2), and WiFi. Works with every popular board in African maker markets.</div></div>
+        <div class="feature-card"><div class="fi">⚡</div><div class="ft">Arduino, ESP32, STM32</div><div class="fb">No proprietary lock-in. Any board a student or technician already owns will work with NeoXLang.</div></div>
+        <div class="feature-card"><div class="fi">🌍</div><div class="ft">Open &amp; Community-Governed</div><div class="fb">Every language wrapper is built openly on GitHub. Communities decide terminology — not translation handed down from above.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-inner">
+      <div class="section-label">Roadmap</div>
+      <h2 class="section-title">From Proof of Concept to 2 Million Users</h2>
+      <div class="roadmap">
+        <div class="phase"><div class="phase-num">1</div><div class="phase-title">Build</div><div class="phase-body">Swahili wrapper + IDE on a $100 Android phone</div></div>
+        <div class="phase"><div class="phase-num">2</div><div class="phase-title">Pilot</div><div class="phase-body">5 schools / makerspaces. 50,000 users in Year 1</div></div>
+        <div class="phase"><div class="phase-num">3</div><div class="phase-title">Expand</div><div class="phase-body">Yoruba, Hausa, Amharic. 500,000 users Year 2</div></div>
+        <div class="phase"><div class="phase-num">4</div><div class="phase-title">Embed</div><div class="phase-body">National STEM programmes. 2M+ users Year 3</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════ GALLERY ═══════════════ -->
+<div class="page" id="page-gallery">
+  <div class="gallery-header">
+    <div class="section-label">Interface Gallery</div>
+    <h2 class="section-title" style="font-size:clamp(26px,3.5vw,44px);margin-bottom:6px">NeoXLang in Action</h2>
+    <p style="color:var(--muted);font-size:15px;margin-bottom:26px">Real screenshots. Click any image to enlarge.</p>
+  </div>
+  <div class="gallery-tabs">
+    <button class="gtab active" onclick="gTab('desktop',this)">🖥 Desktop IDE</button>
+    <button class="gtab" onclick="gTab('mobile',this)">📱 Mobile App</button>
+  </div>
+  <div class="gallery-panel active" id="gtab-desktop">
+    <div class="gallery-grid" style="margin-bottom:4px">
+      <div class="gi wide" onclick="lb('assets/desktop-pics/full_ide_pic.png')"><img src="assets/desktop-pics/full_ide_pic.png" alt="Full IDE"/><div class="gcap">Full Desktop IDE</div></div>
+      <div class="gi" onclick="lb('assets/desktop-pics/multilingual_docs.png')"><img src="assets/desktop-pics/multilingual_docs.png" alt="Multilingual Docs"/><div class="gcap">Multilingual Keyword Documentation</div></div>
+      <div class="gi" onclick="lb('assets/desktop-pics/compiling_example.png')"><img src="assets/desktop-pics/compiling_example.png" alt="Compiling"/><div class="gcap">Compiling Local-Language Code</div></div>
+      <div class="gi" onclick="lb('assets/desktop-pics/mcu_language_selector.png')"><img src="assets/desktop-pics/mcu_language_selector.png" alt="MCU Selector"/><div class="gcap">MCU &amp; Language Selector</div></div>
+    </div>
+    <h3 style="font-size:17px;font-weight:800;margin:36px 0 18px;letter-spacing:-.01em">Connection Panels</h3>
+    <div class="gallery-grid three">
+      <div class="gi" onclick="lb('assets/desktop-pics/ble_connection_panel.png')"><img src="assets/desktop-pics/ble_connection_panel.png" alt="BLE"/><div class="gcap">Bluetooth LE</div></div>
+      <div class="gi" onclick="lb('assets/desktop-pics/usb_connection_panel.png')"><img src="assets/desktop-pics/usb_connection_panel.png" alt="USB"/><div class="gcap">USB Serial</div></div>
+      <div class="gi" onclick="lb('assets/desktop-pics/wifi_connection_panel.png')"><img src="assets/desktop-pics/wifi_connection_panel.png" alt="WiFi"/><div class="gcap">WiFi</div></div>
+      <div class="gi" onclick="lb('assets/desktop-pics/serial_connection_panel.png')"><img src="assets/desktop-pics/serial_connection_panel.png" alt="Serial"/><div class="gcap">Serial Monitor</div></div>
+    </div>
+  </div>
+  <div class="gallery-panel" id="gtab-mobile">
+    <p style="color:var(--muted);font-size:14px;margin-bottom:32px">NeoXLang on Android — full embedded IDE on the phone in your pocket.</p>
+    <div class="mobile-grid">
+      <div><div class="mframe"><img src="assets/mobile-pics/mobile_web.png" alt="Main" onclick="lb('assets/mobile-pics/mobile_web.png')"/></div><div class="mlabel">Main Screen</div></div>
+      <div><div class="mframe"><img src="assets/mobile-pics/mobile_compiling.png" alt="Compiling" onclick="lb('assets/mobile-pics/mobile_compiling.png')"/></div><div class="mlabel">Compiling</div></div>
+      <div><div class="mframe"><img src="assets/mobile-pics/ble_connection_panel.png" alt="BLE" onclick="lb('assets/mobile-pics/ble_connection_panel.png')"/></div><div class="mlabel">BLE</div></div>
+      <div><div class="mframe"><img src="assets/mobile-pics/classic_bluetooth.png" alt="Classic BT" onclick="lb('assets/mobile-pics/classic_bluetooth.png')"/></div><div class="mlabel">Classic BT</div></div>
+      <div><div class="mframe"><img src="assets/mobile-pics/mobile_otg.png" alt="OTG" onclick="lb('assets/mobile-pics/mobile_otg.png')"/></div><div class="mlabel">USB OTG</div></div>
+      <div><div class="mframe"><img src="assets/mobile-pics/mobile_wifi.png" alt="WiFi" onclick="lb('assets/mobile-pics/mobile_wifi.png')"/></div><div class="mlabel">WiFi</div></div>
+      <div><div class="mframe"><img src="assets/mobile-pics/serial_connection.png" alt="Serial" onclick="lb('assets/mobile-pics/serial_connection.png')"/></div><div class="mlabel">Serial Monitor</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<div class="page" id="page-howitworks">
+  <div class="hw-hero">
+    <div class="hw-hero-inner">
+      <div>
+        <div class="section-label" style="color:var(--gold)">Under The Hood</div>
+        <h1>How the NeoXLang Interpreter Works</h1>
+        <p>NeoXLang uses a custom bytecode virtual machine that runs directly on the microcontroller. Code written in any supported language is compiled on the host into compact bytecode, then transmitted to the board over USB, BLE, WiFi, or Classic Bluetooth — where the VM executes it in real time.</p>
+      </div>
+      <div class="arch-diagram">
+        <div style="color:rgba(245,240,232,.35);font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:12px;font-family:'Syne',sans-serif;font-weight:700">System Architecture</div>
+        <div class="arch-layer l1">📝 &nbsp;NeoXLang Source (Swahili / Yoruba / Hausa…)</div>
+        <div class="arch-arrow">↓ &nbsp;language wrapper #defines</div>
+        <div class="arch-layer l2">⚙️ &nbsp;Compiler on host (phone / desktop)</div>
+        <div class="arch-arrow">↓ &nbsp;fixed-width 4-byte opcodes</div>
+        <div class="arch-layer l3">📦 &nbsp;Bytecode packet (NXLG magic + checksum)</div>
+        <div class="arch-arrow">↓ &nbsp;USB / BLE / WiFi / Classic BT</div>
+        <div class="arch-layer l4">🔌 &nbsp;Arduino / ESP32 / STM32</div>
+        <div class="arch-arrow">↓ &nbsp;NeoXLang VM interprets</div>
+        <div class="arch-layer l1">💡 &nbsp;Hardware responds (pins, sensors, motors…)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hw-section">
+    <div class="hw-inner">
+      <div class="section-label">Step by Step</div>
+      <h2 class="section-title">From Source Code to Blinking LED</h2>
+
+      <div class="hw-step">
+        <div class="hw-num">1</div>
+        <div>
+          <div class="hw-title">You Write Code in Your Language</div>
+          <div class="hw-body">
+            <p>In the NeoXLang IDE you write Arduino logic using keywords in your chosen language. A Swahili speaker writes <code>anza()</code> instead of <code>setup()</code>, <code>rudia()</code> instead of <code>loop()</code>, <code>andika_nambari()</code> instead of <code>digitalWrite()</code>. The language layer is a set of <code>#define</code> macros in a header file — a thin translation layer requiring zero changes to the C++ toolchain.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hw-step">
+        <div class="hw-num">2</div>
+        <div>
+          <div class="hw-title">The Compiler Produces Bytecode</div>
+          <div class="hw-body">
+            <p>The host compiler translates the source into compact fixed-width bytecode. Each instruction is 4 bytes: <code>[opcode, param1, param2, reserved]</code>. A full program fits in as few as 512 bytes — small enough for Arduino EEPROM, so programs survive power cycles. The bytecode is language-agnostic: Swahili and English source produce identical binary.</p>
+            <div class="warn-box"><strong>⚠ Work in progress:</strong> Compiler bugs are still being fixed. Some edge cases in expression parsing can produce incorrect bytecode.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hw-step">
+        <div class="hw-num">3</div>
+        <div>
+          <div class="hw-title">The Opcode Set — What the VM Can Do</div>
+          <div class="hw-body">
+            <p>The interpreter supports a rich opcode set covering real embedded programs:</p>
+            <div class="opcode-grid">
+              <div class="opcode-item"><div class="opcode-cat">Variables</div><div class="opcode-list">DECLARE_VAR<br>ASSIGN_VAR<br>LOAD / STORE<br>LOAD_CONST<br>INCREMENT / DECREMENT</div></div>
+              <div class="opcode-item"><div class="opcode-cat">Arithmetic</div><div class="opcode-list">ADD / SUBTRACT<br>MULTIPLY / DIVIDE<br>MODULO<br>BIT_AND / OR / XOR<br>BIT_NOT</div></div>
+              <div class="opcode-item"><div class="opcode-cat">Comparison</div><div class="opcode-list">EQUALS / NOT_EQUALS<br>LESS_THAN / GREATER_THAN<br>LESS_EQUAL / GREATER_EQUAL<br>LOGICAL_AND / OR</div></div>
+              <div class="opcode-item"><div class="opcode-cat">Control Flow</div><div class="opcode-list">JUMP / JUMP_IF_FALSE<br>JUMP_IF_TRUE<br>CALL / RETURN<br>WHILE / FOREACH<br>FUNCTION_START/END</div></div>
+              <div class="opcode-item"><div class="opcode-cat">Hardware I/O</div><div class="opcode-list">PIN_MODE<br>DIGITAL_READ/WRITE<br>ANALOG_READ/WRITE<br>DELAY_MS / DELAY_US<br>GET_MILLIS / MICROS</div></div>
+              <div class="opcode-item"><div class="opcode-cat">Serial &amp; Arrays</div><div class="opcode-list">SERIAL_BEGIN/PRINT<br>SERIAL_READ/AVAIL<br>CREATE_ARRAY<br>ARRAY_LOAD/STORE<br>BIT_SET/CLEAR/READ</div></div>
+            </div>
+            <p style="margin-top:10px">The VM uses a fixed-size stack of 8 values and 4 levels of function call depth — carefully sized for Arduino Uno's 2KB RAM.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hw-step">
+        <div class="hw-num">4</div>
+        <div>
+          <div class="hw-title">Framed, Checksummed Upload Protocol</div>
+          <div class="hw-body">
+            <p>Before sending bytecode, host and device handshake. The host triggers; the device replies <code>ACK_READY (0x52)</code>. The host then sends:</p>
+            <div class="code-block">
+<span class="cc">// Upload packet structure</span>
+<span class="ck">SYNC_BYTE1</span>  <span class="cc">// 0xAA</span>
+<span class="ck">SYNC_BYTE2</span>  <span class="cc">// 0x55</span>
+<span class="cf">MAGIC</span>       <span class="cc">// 4 bytes: "NXLG" (0x4E 0x58 0x4C 0x47)</span>
+<span class="cf">LENGTH</span>      <span class="cc">// 4 bytes big-endian</span>
+<span class="cf">BYTECODE</span>    <span class="cc">// N bytes of program</span>
+<span class="ck">END_MARKER</span>  <span class="cc">// 0xCC</span></div>
+            <p>A checksum (XOR of all bytecode bytes) is embedded in the header. Mismatch → <code>ACK_ERROR (0x45)</code> and discard. Success → <code>ACK_OK (0x4F)</code>, save to EEPROM, begin execution.</p>
+            <div class="warn-box"><strong>⚠ Work in progress:</strong> Handshaking and retry logic are implemented but not yet fully robust. Timeout and checksum failures can occur, particularly over BLE and Classic Bluetooth.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hw-step">
+        <div class="hw-num">5</div>
+        <div>
+          <div class="hw-title">The VM Executes on the Microcontroller</div>
+          <div class="hw-body">
+            <p>The NeoXLang VM is a stack-based interpreter flashed as standard Arduino firmware. It maintains: a program buffer (up to 512 bytes), a variable table (16 signed 16-bit integers), a value stack (8 entries), a call stack (4 entries), and two arrays of up to 16 elements each.</p>
+            <p>The VM scans for <code>SETUP_START</code>/<code>SETUP_END</code> markers and runs that section once, then loops continuously through <code>LOOP_START</code>/<code>LOOP_END</code> — mirroring Arduino's own <code>setup()</code>/<code>loop()</code> model. During delays it polls for incoming serial data, so a new upload can interrupt a running program instantly. Programs are saved to EEPROM and resume automatically on power-up.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hw-step">
+        <div class="hw-num">6</div>
+        <div>
+          <div class="hw-title">Connection Methods</div>
+          <div class="hw-body">
+            <div style="margin-top:4px">
+              <div class="proto-row"><div class="proto-key">USB Serial</div><div class="proto-val">Direct cable via USB-to-serial or USB OTG on Android. Most reliable — recommended for initial setup and desktop use.</div></div>
+              <div class="proto-row"><div class="proto-key">BLE</div><div class="proto-val">Bluetooth Low Energy for wireless uploads. Works with BLE-capable ESP32 boards. Good range, lower throughput.</div></div>
+              <div class="proto-row"><div class="proto-key">Classic BT</div><div class="proto-val">HC-05 / HC-06 modules (under $2, widely available across Africa). Paired via standard Bluetooth before use.</div></div>
+              <div class="proto-row"><div class="proto-key">WiFi</div><div class="proto-val">Over-the-air upload for ESP32/ESP8266. Field technicians can reprogram devices without physical access.</div></div>
+            </div>
+            <div class="warn-box" style="margin-top:14px"><strong>⚠ Work in progress:</strong> BLE and Classic Bluetooth are functional but can be unreliable on some device combinations. WiFi OTA is the most experimental.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ THE CASE ═══════════════ -->
+<div class="page" id="page-case">
+  <div class="case-layout">
+    <aside class="case-sidebar">
+      <div class="cs-title">Contents</div>
+      <a class="cs-link active" href="#c1" onclick="csNav(event,'c1')">1. The Core Problem</a>
+      <a class="cs-link" href="#c2" onclick="csNav(event,'c2')">2. Technically Straightforward</a>
+      <a class="cs-link" href="#c3" onclick="csNav(event,'c3')">3. Precedent &amp; Proof</a>
+      <a class="cs-link" href="#c4" onclick="csNav(event,'c4')">4. Sovereignty &amp; Culture</a>
+      <a class="cs-link" href="#c5" onclick="csNav(event,'c5')">5. The Youth Bulge</a>
+      <a class="cs-link" href="#c6" onclick="csNav(event,'c6')">6. Unlocking Technicians</a>
+      <a class="cs-link" href="#c7" onclick="csNav(event,'c7')">7. Teacher Capacity</a>
+      <a class="cs-link" href="#c8" onclick="csNav(event,'c8')">8. Informal to Formal</a>
+      <a class="cs-link" href="#c9" onclick="csNav(event,'c9')">9. Gender &amp; Rural</a>
+      <a class="cs-link" href="#c10" onclick="csNav(event,'c10')">10. AI &amp; Vocabulary</a>
+      <a class="cs-link" href="#c11" onclick="csNav(event,'c11')">11. Asia's Lesson</a>
+      <a class="cs-link" href="#c12" onclick="csNav(event,'c12')">12. Computational Thinking</a>
+      <a class="cs-link" href="#c13" onclick="csNav(event,'c13')">13. Policy Alignment</a>
+      <a class="cs-link" href="#c14" onclick="csNav(event,'c14')">14. Roadmap</a>
+    </aside>
+    <main class="case-content">
+      <div class="section-label">The Case for Local-Language Coding</div>
+      <h1 style="font-size:clamp(24px,3vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-bottom:18px">Local-Language Arduino Wrappers for Africa</h1>
+      <p style="font-size:16px;color:var(--muted);font-style:italic;border-left:3px solid var(--gold);padding-left:18px;margin-bottom:40px">Arduino is the world's most accessible hardware platform. Yet its programming interface speaks only one language: English. For 650 million Africans, that single fact is the biggest preventable barrier to hardware education on the continent.</p>
+      <h2 id="c1">1. The Core Problem: English as the Invisible Barrier</h2>
+      <p>Arduino is cheap, open-source, and available even in low-resource African contexts. Yet its programming interface is locked entirely in English. For the roughly <strong>650 million Africans whose first language is not English</strong> — speakers of Swahili, Yoruba, Hausa, Amharic, Twi, Zulu, and hundreds of other languages — learning Arduino means mastering two things simultaneously: a new cognitive discipline and a foreign language.</p>
+      <h2 id="c2">2. Why This Is Technically Straightforward</h2>
+      <p>Arduino already has a C preprocessor, so keyword renaming is done with <code>#define</code> macros — one line per keyword. A working Swahili wrapper could be built in a weekend:</p>
+      <div class="code-block"><span class="ck">#define</span> anza()                   setup()<br><span class="ck">#define</span> chapisha(x)              Serial.print(x)<br><span class="ck">#define</span> andika_nambari(pin, val) digitalWrite(pin, val)</div>
+      <h2 id="c3">3. Precedent: Other Projects Show This Works</h2>
+      <p>Scratch supports over 70 interface languages and sees dramatically higher uptake where the UI matches the local instruction language. Nuru — a Swahili-based programming language — demonstrates that local-language programming significantly boosts engagement. NeoXLang is the natural physical-world extension.</p>
+      <h2 id="c4">4. Sovereignty Over Tools and Cultural Legitimacy</h2>
+      <div class="quote-block">A Yoruba-language Arduino wrapper is not merely a teaching convenience. It is a statement that Yoruba-speaking engineers are full participants in the global maker movement — and that the tools of that movement can be owned, maintained, and extended by African communities in African languages.</div>
+      <h2 id="c5">5. The Youth Bulge: Africa Cannot Afford to Wait for English</h2>
+      <p>By 2050, Africa will be home to roughly <strong>1.2 billion people under 25</strong>. They are entering the labour market right now. Achieving English proficiency to parse programming documentation takes five to ten years of sustained instruction. Africa does not have that runway.</p>
+      <div class="quote-block">A local-language Arduino wrapper is not a consolation prize for those who haven't yet learned English. It is a fast lane for the generation that cannot afford to wait.</div>
+      <h2 id="c6">6. From Technicians to Programmers: Unlocking Existing Talent</h2>
+      <p>Africa's cities are full of skilled electronics technicians who can replace a microcontroller brain but cannot rewrite it because firmware is locked behind English-only interfaces. A phone-repair technician earns subsistence income; an embedded firmware developer earns a middle-class salary. The local-language wrapper is the most direct possible intervention between those two realities.</p>
+      <h2 id="c7">7. Teacher Capacity and Classroom-Scale Impact</h2>
+      <p>Most African secondary-level teachers are not fluent enough in English to comfortably parse technical documentation. A local-language wrapper becomes a teacher-support layer — reducing prep time, lowering cognitive load, and making confident lesson delivery possible across hundreds of schools from a single open-source repository.</p>
+      <h2 id="c8">8. Bridging Formal Schooling and Informal Tinkering</h2>
+      <p>Hundreds of thousands of young Africans learn electronics in informal repair spaces but almost never encounter code. A local-language wrapper is the missing bridge between boda-boda shops, phone-fix stalls, and structured programming — turning informal tinkering into a legitimate STEM career pathway.</p>
+      <h2 id="c9">9. Gender and Rural Inclusion</h2>
+      <p>Girls and rural learners are disproportionately affected by both the hardware gap and the language gap. Using local languages in STEM removes the double burden of language-plus-technical-content and addresses the <strong>"hidden cultural tax"</strong> that keeps many girls out of hardware paths.</p>
+      <h2 id="c10">10. Natural Language Is the New Programming</h2>
+      <p>AI tools are making programming conversational. African languages currently lack standardised technical vocabulary — no agreed Swahili word for "loop", no standard Yoruba term for "debug".</p>
+      <div class="quote-block">Every time a community agrees that andika_nambari() is the Swahili equivalent of digitalWrite(), they are making a decision about the technical future of their language. Multiplied across thousands of classrooms, this becomes training-data infrastructure for African-language AI.</div>
+      <h2 id="c11">11. Asia Grew Their Languages to Meet Technology</h2>
+      <p>Japan built katakana equivalents for every technical term. China chose semantic translation: <em>ruanjian</em> for software, <em>biancheng</em> for programming. These were deliberate policy choices that their languages would be full participants in the technological future. <strong>Building technical vocabulary in your language is a policy choice, not a linguistic impossibility.</strong></p>
+      <h2 id="c12">12. Raising Computational Thinking for the Ordinary Person</h2>
+      <p>The goal of teaching programming is not to produce programmers — it is to raise the quality of abstract reasoning across an entire society. Research shows this develops most effectively in the language a person naturally thinks in. A Yoruba-speaking farmer who learns sequencing through planting-season analogies, in Yoruba, using hardware she can hold, may never write code — but will plan, budget, and decide differently for life.</p>
+      <h2 id="c13">13. Policy, Data Sovereignty, and Alignment with National Goals</h2>
+      <p>A local-language Arduino wrapper can be positioned as a practical, low-cost tool for existing government STEM goals, early-stage infrastructure for African-language data sovereignty, and a classroom-ready compliance item for ministries wanting local-language STEM integration without rebuilding curricula.</p>
+      <h2 id="c14">14. The Practical Roadmap</h2>
+      <table class="rm-table">
+        <thead><tr><th>Phase</th><th>Action</th><th>Who</th></tr></thead>
+        <tbody>
+          <tr><td>1. Proof of Concept</td><td>Build Swahili wrapper; translate core keywords &amp; error messages</td><td>Open-source contributors</td></tr>
+          <tr><td>2. Pilot</td><td>Deploy in 3–5 partner schools; iterate on terminology with teachers</td><td>iHub, Kumasi Hive</td></tr>
+          <tr><td>3. Replicate</td><td>Fork pattern for Yoruba, Hausa, Amharic; publish replication guide</td><td>Language communities + donors</td></tr>
+          <tr><td>4. Integrate</td><td>Align with national STEM policies; feed vocab into African-language AI corpora</td><td>Ministries, NGOs, AI labs</td></tr>
+        </tbody>
+      </table>
+      <div class="quote-block" style="margin-top:32px">One keyword. One agreed translation. One classroom at a time.</div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════ TEAM ═══════════════ -->
+<div class="page" id="page-team">
+  <div class="team-wrap">
+    <div class="team-top">
+      <div class="team-lead">
+        <div class="section-label">The Team</div>
+        <h1>Built by Sanlabs</h1>
+        <p style="color:var(--muted);font-size:16px;line-height:1.68;margin-top:14px">NeoXLang is a product of Sanlabs — building technology infrastructure for Africa's next generation of engineers. We're a small team, and like the product, a work in progress.</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">SN</div>
+        <div class="team-name">Steven Nakibinge</div>
+        <div class="team-role">Primary Developer</div>
+        <p class="team-desc">Lead engineer and founder of NeoXLang at Sanlabs. Responsible for the mobile app (Flutter/Android), the desktop IDE (Flask/Python), the Arduino interpreter firmware, the language wrapper architecture, the communication protocols, and the overall system design.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="repo-wrap">
+    <div class="section-label">Project Repositories</div>
+    <h2 class="section-title">Open Source, Community Governed</h2>
+    <p style="color:var(--muted);font-size:15px;margin-bottom:4px">NeoXLang is split across multiple repositories. Each can be forked independently — language communities, hardware hackers, and educators are all welcome.</p>
+    <div class="repo-grid">
+      <div class="repo-card"><div class="repo-name">neoxlang-mobile</div><div class="repo-desc">Flutter-based Android &amp; iOS app. Full CodeMirror IDE, BLE/WiFi/USB/Classic Bluetooth, local-language UI, AI assistant.</div><div class="repo-tags"><span class="repo-tag">Flutter</span><span class="repo-tag">Dart</span><span class="repo-tag tag-wip">Active dev</span></div></div>
+      <div class="repo-card"><div class="repo-name">neoxlang-desktop</div><div class="repo-desc">Flask/Python desktop app. Professional IDE for makerspaces and universities. Runs on Windows, Linux, macOS.</div><div class="repo-tags"><span class="repo-tag">Python</span><span class="repo-tag">Flask</span><span class="repo-tag tag-wip">Active dev</span></div></div>
+      <div class="repo-card"><div class="repo-name">neoxlang-interpreter</div><div class="repo-desc">Arduino firmware — the bytecode VM that runs on the microcontroller. Supports Arduino Uno, ESP32, STM32. EEPROM persistence.</div><div class="repo-tags"><span class="repo-tag">C++</span><span class="repo-tag">Arduino</span><span class="repo-tag tag-wip">Active dev</span></div></div>
+      <div class="repo-card"><div class="repo-name">neoxlang-swahili</div><div class="repo-desc">Swahili language wrapper. #define macro header mapping Swahili keywords to standard Arduino C++. ~200M speakers.</div><div class="repo-tags"><span class="repo-tag">C</span><span class="repo-tag">Swahili</span><span class="repo-tag tag-wip">In progress</span></div></div>
+      <div class="repo-card"><div class="repo-name">neoxlang-yoruba</div><div class="repo-desc">Yoruba language wrapper. Community-governed. Terminology decisions made openly — pull requests welcome from Yoruba speakers.</div><div class="repo-tags"><span class="repo-tag">C</span><span class="repo-tag">Yoruba</span><span class="repo-tag tag-wip">Planning</span></div></div>
+      <div class="repo-card"><div class="repo-name">neoxlang-docs</div><div class="repo-desc">Documentation, teacher guides, and replication guides for starting new language communities. Multilingual by design.</div><div class="repo-tags"><span class="repo-tag">Docs</span><span class="repo-tag tag-wip">Early draft</span></div></div>
+    </div>
+  </div>
+
+  <div class="status-wrap">
+    <div class="section-label">Current Status</div>
+    <h2 class="section-title" style="margin-bottom:24px">What's Working, What Isn't</h2>
+    <div class="status-grid">
+      <div class="si"><div class="sdot dot-y"></div><div><div class="si-t">Compiler</div><div class="si-b">Functional but bugs still being fixed. Some expression parsing edge cases produce incorrect bytecode. Active fix in progress.</div></div></div>
+      <div class="si"><div class="sdot dot-y"></div><div><div class="si-t">Communication Protocol</div><div class="si-b">Handshaking and retry logic implemented. Still being hardened — occasional timeout and checksum failures over BLE and Classic Bluetooth.</div></div></div>
+      <div class="si"><div class="sdot dot-r"></div><div><div class="si-t">Language Translation</div><div class="si-b">Swahili wrapper is a proof-of-concept. Far from complete coverage. Yoruba and Hausa not yet started. Community governance not yet set up.</div></div></div>
+      <div class="si"><div class="sdot dot-r"></div><div><div class="si-t">Hardware Design</div><div class="si-b">Still designing and building dedicated NeoXLang hardware. Currently sampling the compiler on off-the-shelf Arduino boards only.</div></div></div>
+      <div class="si"><div class="sdot dot-g"></div><div><div class="si-t">Mobile App (Android)</div><div class="si-b">APK available and installable. Core IDE, code editor, and USB OTG connection working. BLE and WiFi functional on tested devices.</div></div></div>
+      <div class="si"><div class="sdot dot-g"></div><div><div class="si-t">Desktop App (Flask)</div><div class="si-b">Runs on Windows/Linux/macOS. Requires Python + Flask. Core features working. See Download → Setup Steps for install instructions.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ DOWNLOAD ═══════════════ -->
+<div class="page" id="page-download">
+  <div class="dl-hero">
+    <div class="section-label" style="color:var(--gold);margin-bottom:12px">Get NeoXLang</div>
+    <h1>Download &amp; Install</h1>
+    <p>Three components. Free and open source. No account required.</p>
+  </div>
+
+  <div class="dl-cards">
+    <div class="dl-card">
+      <div class="dl-icon">🔌</div>
+      <div class="dl-tag">Arduino / ESP32 / STM32 · .ino Firmware</div>
+      <div class="dl-title">The Interpreter</div>
+      <div class="dl-body">The bytecode VM that runs on your microcontroller. Flash this <strong>once</strong> using the Arduino IDE. After that, NeoXLang uploads and runs programs wirelessly — no re-flashing needed. Also available in a no-EEPROM variant for boards without persistent storage.</div>
+      <a href="NeoXLang_Interpreter.zip" download class="btn-dl dark">⬇ Download Interpreter (.zip)</a>
+      <a href="NeoXLang_Interpreter_noEEPROM.rar" download class="btn-dl outline">⬇ No-EEPROM variant (.rar)</a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-icon">🖥</div>
+      <div class="dl-tag">Windows / Linux / macOS · Flask / Python</div>
+      <div class="dl-title">Desktop App</div>
+      <div class="dl-body">The full NeoXLang IDE for computers. Built with Flask and Python — runs locally in your browser. Includes the code editor, serial monitor, BLE &amp; WiFi connectivity, and multilingual keyword documentation. Ideal for makerspaces and universities.</div>
+      <a href="NeoXLang_Desktop.zip" download class="btn-dl green">⬇ Download Desktop App (.zip)</a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-icon">📱</div>
+      <div class="dl-tag">Android · APK · Sideload</div>
+      <div class="dl-title">Mobile App</div>
+      <div class="dl-body">Turn any Android phone into a full embedded IDE. Write code, compile, and flash your microcontroller over BLE, Classic Bluetooth, WiFi, or USB OTG — from the phone you already own. No laptop needed. Android 7.0+.</div>
+      <a href="NeoXLang.apk" download class="btn-dl orange">⬇ Download APK</a>
+    </div>
+  </div>
+
+  <div class="install-section">
+    <div class="section-label">Installation Guides</div>
+    <h2 class="section-title">Step-by-Step Setup</h2>
+    <div class="install-tabs">
+      <button class="itab active" onclick="iTab('interpreter',this)">🔌 Interpreter</button>
+      <button class="itab" onclick="iTab('desktop',this)">🖥 Desktop App</button>
+      <button class="itab" onclick="iTab('mobile',this)">📱 Mobile App</button>
+    </div>
+
+    <!-- INTERPRETER -->
+    <div class="ipanel active" id="ipanel-interpreter">
+      <div class="info-box"><strong>What this is:</strong> Arduino firmware you flash once. After that the board listens for NeoXLang bytecode over USB/BLE/WiFi and executes it directly — no re-flashing for new programs.</div>
+      <div style="margin-top:24px">
+        <div class="install-step"><div class="is-num">1</div><div><div class="is-title">Download &amp; extract the interpreter ZIP</div><div class="is-body">Click <strong>Download Interpreter</strong> above. Extract — you'll find <code>NeoXLang_Interpreter.ino</code> inside a folder named <code>NeoXLang_Interpreter/</code>. The folder name must match the .ino filename for the Arduino IDE to accept it.</div></div></div>
+        <div class="install-step"><div class="is-num">2</div><div><div class="is-title">Install the Arduino IDE (if not already installed)</div><div class="is-body">Download Arduino IDE 2.x from <strong>arduino.cc/en/software</strong>. For ESP32 boards, add the board manager URL in <em>File → Preferences → Additional Boards Manager URLs</em>:<span class="cmd">https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json</span></div></div></div>
+        <div class="install-step"><div class="is-num">3</div><div><div class="is-title">Open the interpreter sketch</div><div class="is-body">Go to <em>File → Open</em> and select <code>NeoXLang_Interpreter.ino</code>. The sketch opens in the editor.</div></div></div>
+        <div class="install-step"><div class="is-num">4</div><div><div class="is-title">Select your board and port</div><div class="is-body">Connect your board via USB. Select your board from <em>Tools → Board</em> and port from <em>Tools → Port</em>. For Arduino Uno select <strong>Arduino Uno</strong>; for ESP32 select <strong>ESP32 Dev Module</strong>.<div class="warn-box"><strong>Note:</strong> The standard EEPROM variant requires a board with EEPROM support (Uno, Nano, Mega, ESP32). For boards without EEPROM, use the No-EEPROM variant — programs won't persist across power cycles but everything else works identically.</div></div></div></div>
+        <div class="install-step"><div class="is-num">5</div><div><div class="is-title">Upload and verify</div><div class="is-body">Click <strong>Upload</strong>. When complete, open Serial Monitor at <strong>115200 baud</strong>. You should see:<span class="cmd">NeoXLang VM ready - FULL FEATURE with Checksums<br>No program in EEPROM. Ready for upload.</span>The board blinks its built-in LED 3 times to confirm it's ready. ✓</div></div></div>
+      </div>
+    </div>
+
+    <!-- DESKTOP -->
+    <div class="ipanel" id="ipanel-desktop">
+      <div class="info-box"><strong>What this is:</strong> A Flask (Python) app that runs locally. It serves the NeoXLang IDE in your browser and handles communication with your microcontroller over USB, BLE, or WiFi.</div>
+      <div class="warn-box"><strong>⚠ Work in progress:</strong> The desktop app is functional but under active development. Some features may behave unexpectedly.</div>
+      <div style="margin-top:24px">
+        <div class="install-step"><div class="is-num">1</div><div><div class="is-title">Make sure Python 3.8+ is installed</div><div class="is-body">Open a terminal and run:<span class="cmd">python --version</span>If not installed, download from <strong>python.org</strong>. On Windows, tick <em>"Add Python to PATH"</em> during installation.</div></div></div>
+        <div class="install-step"><div class="is-num">2</div><div><div class="is-title">Download &amp; extract the Desktop App ZIP</div><div class="is-body">Click <strong>Download Desktop App</strong> above. Extract to a folder, e.g. <code>C:\NeoXLang\</code> on Windows or <code>~/neoxlang/</code> on Linux/macOS.</div></div></div>
+        <div class="install-step"><div class="is-num">3</div><div><div class="is-title">Install dependencies</div><div class="is-body">Open a terminal, navigate to the extracted folder, and run:<span class="cmd">pip install -r requirements.txt</span>If there is no requirements.txt, install manually:<span class="cmd">pip install flask pyserial</span></div></div></div>
+        <div class="install-step"><div class="is-num">4</div><div><div class="is-title">Run the app</div><div class="is-body">From the same folder:<span class="cmd">python app.py</span>You'll see:<span class="cmd">* Running on http://127.0.0.1:5000</span>Open your browser at <strong>http://127.0.0.1:5000</strong> — the NeoXLang IDE will load.</div></div></div>
+        <div class="install-step"><div class="is-num">5</div><div><div class="is-title">Connect your board</div><div class="is-body">Plug in your microcontroller via USB. In the IDE, select the correct COM port (Windows) or <code>/dev/ttyUSB0</code> / <code>/dev/ttyACM0</code> (Linux/macOS) in the connection panel. Set baud rate to <strong>115200</strong>. Click Connect.</div></div></div>
+        <div class="install-step"><div class="is-num">6</div><div><div class="is-title">(Windows) If serial port not found</div><div class="is-body">You may need a USB-to-serial driver. For the CH340 chip (clone Arduinos), download the CH340 driver. For official Arduino boards (FTDI chip), download FTDI VCP drivers from <strong>ftdichip.com</strong>.</div></div></div>
+      </div>
+    </div>
+
+    <!-- MOBILE -->
+    <div class="ipanel" id="ipanel-mobile">
+      <div class="info-box"><strong>What this is:</strong> A native Android app (Flutter). Sideloads directly via APK — no Play Store required. Supports Android 7.0 (Nougat) and above.</div>
+      <div style="margin-top:24px">
+        <div class="install-step"><div class="is-num">1</div><div><div class="is-title">Enable "Install from unknown sources"</div><div class="is-body">Go to <em>Settings → Security</em> (or <em>Settings → Privacy</em> on newer Android). Find <strong>"Install unknown apps"</strong> or <strong>"Unknown sources"</strong> and enable it for your file manager or browser. The exact path varies by manufacturer.</div></div></div>
+        <div class="install-step"><div class="is-num">2</div><div><div class="is-title">Download the APK to your phone</div><div class="is-body">Tap <strong>Download APK</strong> directly on your phone, or transfer the file from your computer via USB or cloud storage.</div></div></div>
+        <div class="install-step"><div class="is-num">3</div><div><div class="is-title">Open and install the APK</div><div class="is-body">Open your file manager, tap the APK file, and tap <strong>Install</strong>. The NeoXLang icon will appear in your app drawer when complete.</div></div></div>
+        <div class="install-step"><div class="is-num">4</div><div><div class="is-title">For USB OTG (wired connection)</div><div class="is-body">Connect a USB OTG adapter to your phone, then plug in your Arduino's USB cable. In the app select <strong>USB / OTG</strong>. Grant the USB permission prompt when it appears.</div></div></div>
+        <div class="install-step"><div class="is-num">5</div><div><div class="is-title">For Classic Bluetooth (HC-05/HC-06)</div><div class="is-body">First pair the module in your phone's Bluetooth settings (default PIN: <code>1234</code> or <code>0000</code>). Then open the app, select <strong>Classic Bluetooth</strong>, and choose your paired device.</div></div></div>
+        <div class="install-step"><div class="is-num">6</div><div><div class="is-title">For BLE (ESP32)</div><div class="is-body">No pre-pairing needed. In the app select <strong>BLE</strong>, tap <strong>Scan</strong>, and select your ESP32 from the list.</div></div></div>
+        <div class="install-step"><div class="is-num">7</div><div><div class="is-title">Write code and upload</div><div class="is-body">Select your language, write your program, and tap <strong>Upload</strong>. The app compiles, frames the bytecode, and sends it to your board. Watch the serial monitor for <code>OK N bytes</code> — that's confirmation it worked.</div></div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:52px">
+      <div class="section-label">Documents</div>
+      <h3 style="font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:18px">Supporting Documents</h3>
+      <div class="docs-grid">
+        <a href="assets/NeoXLang_Eigen_Prize.docx" download class="doc-card"><div class="doc-icon">📄</div><div><div class="doc-title">NeoXLang — Eigen Prize Submission</div><div class="doc-desc">Full executive summary, problem analysis, solution overview, roadmap, and projected impact. Eigen Prize 2025.</div></div></a>
+        <a href="assets/Case_for_Local_Languages.docx" download class="doc-card"><div class="doc-icon">📝</div><div><div class="doc-title">The Case for Local-Language Arduino Wrappers</div><div class="doc-desc">14-point deep dive covering the technical, economic, demographic, cultural, and policy case.</div></div></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLb()">
+  <button class="lb-close" onclick="closeLb()">✕</button>
+  <img id="lb-img" src="" alt="" onclick="event.stopPropagation()"/>
+</div>
+
+<script>
+function dismissBanner(){
+  document.getElementById('wip-banner').style.display='none';
+  document.getElementById('main-nav').classList.add('no-banner');
+  document.querySelectorAll('.page').forEach(function(p){p.style.paddingTop='70px';});
+}
+function showPage(p){
+  document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active');});
+  document.querySelectorAll('.nav-links a').forEach(function(a){a.classList.remove('active');});
+  document.getElementById('page-'+p).classList.add('active');
+  var l=document.getElementById('nav-'+p);
+  if(l)l.classList.add('active');
+  window.scrollTo(0,0);
+}
+function gTab(name,btn){
+  document.querySelectorAll('.gtab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.gallery-panel').forEach(function(p){p.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('gtab-'+name).classList.add('active');
+}
+function iTab(name,btn){
+  document.querySelectorAll('.itab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.ipanel').forEach(function(p){p.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('ipanel-'+name).classList.add('active');
+}
+function csNav(e,id){
+  e.preventDefault();
+  var el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('.cs-link').forEach(function(l){l.classList.remove('active');});
+  e.currentTarget.classList.add('active');
+}
+function lb(src){
+  document.getElementById('lb-img').src=src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+</script>
 </body>
 </html>
